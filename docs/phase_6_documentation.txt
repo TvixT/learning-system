@@ -1,0 +1,64 @@
+Documentation for Phase 6: Assignments Creation and Submission System
+
+Overview
+--------
+This phase implements a comprehensive assignment system for the Online Learning System, allowing instructors to create assignments linked to lessons and students to submit their work. The system includes features for assignment creation, submission, grading, and feedback, with validation and deadline enforcement.
+
+Objectives
+----------
+- Create Assignment model linked to Lesson with title, description, due date, max score
+- Allow students to submit assignments (file upload or code/text)
+- Enable instructors to review submissions, assign scores, and provide feedback
+- Allow students to view their grades and feedback
+- Implement validation and deadline enforcement
+- Include notification capabilities for assignment-related events
+
+These objectives are crucial for creating an interactive learning environment where students can practice their skills and receive feedback from instructors.
+
+Implementation Approach
+-----------------------
+- Created a new Django app 'assignments' to encapsulate assignment-related functionality
+- Defined two models in assignments/models.py:
+  - Assignment: Represents an assignment linked to a lesson with due date and max score
+  - Submission: Represents a student's submission for an assignment with file/text content and grade
+- Implemented forms in assignments/forms.py with validation:
+  - AssignmentForm: For creating and editing assignments with due date validation
+  - SubmissionForm: For submitting assignments with file/text validation
+  - GradeSubmissionForm: For instructors to grade submissions with score validation
+- Created views in assignments/views.py for comprehensive assignment management:
+  - Assignment listing and detail views
+  - Assignment creation, editing, and deletion (instructor/employee only)
+  - Submission creation (student only)
+  - Submission grading (instructor/employee only)
+  - Submission listing and detail views
+- Developed templates for all assignment-related views using Tailwind CSS
+- Added navigation links from lesson detail pages to assignment management
+- Implemented a management command to populate sample assignments for testing
+- Added validation and deadline enforcement throughout the system
+
+Roles and Responsibilities
+--------------------------
+- Student: Can view assignments, submit work, and view grades/feedback
+- Instructor: Can create, edit, and delete assignments; grade submissions; provide feedback
+- Employee: Can manage all assignments and submissions across the system
+- Developer: Responsible for implementing the models, views, and templates; maintaining role-based access controls
+
+Expected Deliverables or Outcomes
+---------------------------------
+- Fully functional assignment creation and submission system
+- Support for both file and text submissions
+- Instructor grading interface with score and feedback capabilities
+- Student grade viewing interface
+- Deadline enforcement and validation
+- Responsive UI templates with dark theme using Tailwind CSS
+- Sample data for assignments
+- Updated project documentation and requirements
+
+Caveats & Considerations
+------------------------
+- File uploads are stored locally; a production environment would use cloud storage
+- The implementation uses Django's built-in file handling capabilities
+- Deadline enforcement is implemented at the view level
+- Validation is implemented in both forms and views
+- The system maintains data integrity through model relationships and constraints
+- Notifications are not implemented in this phase but the system is designed to support them

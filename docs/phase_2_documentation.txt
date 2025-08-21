@@ -1,0 +1,66 @@
+Documentation for Phase 2: Course, Category, and Tag Models with Management
+
+Overview
+--------
+This phase extends the Online Learning System by implementing the core functionality for course management. It introduces models for courses, categories, and tags, along with views and templates for creating, editing, and managing these entities. The implementation follows role-based access control, ensuring that instructors can manage their own courses while employees have broader administrative privileges.
+
+Objectives
+----------
+- Implement Category model for organizing courses (managed by employees)
+- Implement Tag model for flexible course categorization
+- Implement Course model with comprehensive fields including title, description, price, image, publication status, and relationships to instructors, categories, and tags
+- Create role-based access controls for course management:
+  - Instructors can create, edit, and manage their own courses
+  - Employees can manage all courses, categories, and tags
+- Provide user-friendly interfaces for course discovery and management
+- Register all models with Django admin for administrative tasks
+- Implement search and filtering capabilities for courses
+
+These objectives are crucial for building a functional learning platform where content can be organized, discovered, and managed effectively by different user roles.
+
+Implementation Approach
+-----------------------
+- Created a new Django app 'courses' to encapsulate course-related functionality
+- Defined three models in courses/models.py:
+  - Category: For organizing courses into broad subject areas
+  - Tag: For adding detailed metadata to courses
+  - Course: The main model containing all course information and relationships
+- Implemented Django admin configurations in courses/admin.py with role-based permissions:
+  - Employees have full access to all course management features
+  - Instructors can only manage their own courses
+  - Students have no access to course management in admin
+- Created views in courses/views.py for both public course browsing and role-specific management:
+  - Public course list with search and filtering capabilities
+  - Detailed course view
+  - Instructor dashboard for managing their courses
+  - Forms for creating and editing courses
+  - Confirmation views for course deletion
+- Developed a complete set of templates using Tailwind CSS for a consistent dark-themed UI
+- Implemented a management command to populate the database with sample categories and tags
+- Created sample courses programmatically for testing and demonstration
+
+Roles and Responsibilities
+--------------------------
+- Instructor: Can create, edit, and delete their own courses; view their course list
+- Employee: Can manage all courses, categories, and tags through both admin interface and public views
+- Student: Can browse and search published courses
+- Developer: Responsible for implementing the models, views, and templates; maintaining role-based access controls
+
+Expected Deliverables or Outcomes
+---------------------------------
+- Fully functional course management system with proper role-based access controls
+- Public course browsing interface with search and filtering
+- Instructor course management dashboard
+- Django admin integration for employee management
+- Sample data for categories, tags, and courses
+- Responsive UI templates with dark theme using Tailwind CSS
+- Updated project documentation and requirements
+
+Caveats & Considerations
+------------------------
+- Image handling requires Pillow library, which has been added to requirements
+- Course images are stored locally; a production environment would use cloud storage
+- The implementation uses Django's built-in authentication and permission system
+- Search functionality is implemented at the database level for efficiency
+- Pagination is implemented for both course lists and instructor dashboards
+- The model design allows for future extensions such as course modules, lessons, and enrollments

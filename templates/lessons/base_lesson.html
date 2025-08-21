@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Lessons{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">
+            {% if course %}
+                <a href="{% url 'course_detail' course.pk %}" class="text-blue-400 hover:text-blue-300">
+                    {{ course.title }}
+                </a> - Lessons
+            {% else %}
+                Lessons
+            {% endif %}
+        </h1>
+        {% if user.is_authenticated and user.role in 'instructor,employee' and course %}
+            <a 
+                href="{% url 'create_lesson' course.pk %}" 
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+                Create Lesson
+            </a>
+        {% endif %}
+    </div>
+    
+    {% block lesson_content %}
+    {% endblock %}
+</div>
+{% endblock %}

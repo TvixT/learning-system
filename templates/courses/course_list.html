@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Online Learning System{% endblock %}
+
+{% block content %}
+<div class="bg-lightblue rounded-xl shadow-lg p-6 mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-0">All Courses</h1>
+        
+        <!-- Search Form -->
+        <form method="get" class="w-full md:w-auto">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-500"></i>
+                </div>
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ query|default:'' }}"
+                    class="w-full md:w-64 pl-10 pr-4 py-2 bg-darkblue text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Search courses..."
+                >
+                {% if query %}
+                    <a href="{% url 'course_list' %}" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <i class="fas fa-times text-gray-500 hover:text-white"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    
+    <!-- Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+            <label for="category" class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+            <select 
+                id="category" 
+                name="category"
+                onchange="this.form.submit()"
+                class="w-full px-3 py-2 bg-darkblue text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="tag" class="block text-sm font-medium text-gray-300 mb-2">Tag</label>
+            <select 
+                id="tag" 
+                name="tag"
+                onchange="this.form.submit()"
+                class="w-full px-3 py-2 bg-darkblue text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+                <option value="">All Tags</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {% if selected_tag == tag.id %}selected{% endif %}>
+                        {{ tag.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label for="instructor" class="block text-sm font-medium text-gray-300 mb-2">Instructor</label>
+            <select 
+                id="instructor" 
+                name="instructor"
+                onchange="this.form.submit()"
+                class="w-full px-3 py-2 bg-darkblue text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+                <option value="">All Instructors</option>
+                {% for instructor in instructors %}
+                    <option value="{{ instructor.id }}" {% if selected_instructor == instructor.id %}selected{% endif %}>
+                        {{ instructor.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <!-- Course Grid -->
+    {% if page_obj %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for course in page_obj %}
+                <div class="bg-darkblue rounded-xl overflow-hidden shadow-lg card">
+                    {% if course.image %}
+                        <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-48 object-cover course-image">
+                    {% else %}
+                        <div class="bg-gray-700 h-48 flex items-center justify-center">
+                            <i class="fas fa-book-open text-4xl text-gray-500"></i>
+                        </div>
+                    {% endif %}
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h2 class="text-xl font-bold text-white">{{ course.title }}</h2>
+                            <span class="text-lg font-bold text-primary">
+                                {% if course.price == 0 %}
+                                    Free
+                                {% else %}
+                                    ${{ course.price }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ course.description }}</p>
+                        
+                        <div class="flex items-center text-sm text-gray-400 mb-4">
+                            <i class="fas fa-user mr-1"></i>
+                            <span>{{ course.instructor.username }}</span>
+                            {% if course.category %}
+                                <span class="mx-2">•</span>
+                                <span>{{ course.category.name }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for tag in course.tags.all|slice:":3" %}
+                                <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                                    {{ tag.name }}
+                                </span>
+                            {% endfor %}
+                            {% if course.tags.count > 3 %}
+                                <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                                    +{{ course.tags.count|add:"-3" }} more
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-sm text-gray-400">
+                                {% if course.get_review_count > 0 %}
+                                    <div class="flex text-yellow-400 mr-1">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span>{{ course.get_average_rating }}</span>
+                                    <span class="mx-1">•</span>
+                                {% endif %}
+                                <span>{{ course.get_lessons_count }} lessons</span>
+                            </div>
+                            
+                            <a 
+                                href="{% url 'course_detail' course.pk %}" 
+                                class="btn-primary text-white font-medium py-2 px-4 rounded-lg text-sm hover:bg-blue-700 transition duration-300"
+                            >
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-3 text-center py-12">
+                    <i class="fas fa-book-open text-5xl text-gray-500 mb-4"></i>
+                    <p class="text-gray-400 text-lg">No courses found matching your criteria.</p>
+                    <a 
+                        href="{% url 'course_list' %}" 
+                        class="mt-4 inline-block btn-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
+                    >
+                        Clear Filters
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <div class="mt-12 flex justify-center">
+                <nav class="inline-flex rounded-md shadow">
+                    {% if page_obj.has_previous %}
+                        <a 
+                            href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_instructor %}&instructor={{ selected_instructor }}{% endif %}" 
+                            class="px-4 py-2 rounded-l-md border border-gray-700 bg-darkblue text-white hover:bg-gray-700 transition duration-300"
+                        >
+                            <i class="fas fa-chevron-left mr-1"></i> Previous
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-4 py-2 border-t border-b border-gray-700 bg-primary text-white">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a 
+                                href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_instructor %}&instructor={{ selected_instructor }}{% endif %}" 
+                                class="px-4 py-2 border-t border-b border-gray-700 bg-darkblue text-white hover:bg-gray-700 transition duration-300"
+                            >
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a 
+                            href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_instructor %}&instructor={{ selected_instructor }}{% endif %}" 
+                            class="px-4 py-2 rounded-r-md border border-gray-700 bg-darkblue text-white hover:bg-gray-700 transition duration-300"
+                        >
+                            Next <i class="fas fa-chevron-right ml-1"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-book-open text-5xl text-gray-500 mb-4"></i>
+            <p class="text-gray-400 text-lg">No courses available at the moment.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

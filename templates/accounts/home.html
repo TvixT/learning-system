@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Online Learning System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-lightblue to-darkblue rounded-2xl p-8 md:p-12 mb-12">
+    <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-3xl md:text-5xl font-bold text-white mb-6">
+            Welcome to Online Learning System
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-8">
+            Expand your skills with our comprehensive online courses from industry experts. 
+            Learn at your own pace and advance your career.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="{% url 'course_list' %}" class="btn-primary text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-blue-700 transition duration-300 transform hover:-translate-y-0.5">
+                <i class="fas fa-graduation-cap mr-2"></i> Browse Courses
+            </a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="bg-white text-darkblue font-bold py-3 px-6 rounded-lg text-lg hover:bg-gray-200 transition duration-300 transform hover:-translate-y-0.5">
+                    <i class="fas fa-user-plus mr-2"></i> Register Now
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Featured Courses Section -->
+<div class="mb-16">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">Featured Courses</h2>
+        <a href="{% url 'course_list' %}" class="text-primary hover:text-blue-400 font-medium">
+            View All <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for course in featured_courses %}
+            <div class="bg-lightblue rounded-2xl overflow-hidden shadow-lg card">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-48 object-cover course-image">
+                {% else %}
+                    <div class="bg-gray-700 h-48 flex items-center justify-center">
+                        <i class="fas fa-book-open text-4xl text-gray-500"></i>
+                    </div>
+                {% endif %}
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-white mb-2">{{ course.title }}</h3>
+                    <p class="text-gray-400 mb-4 line-clamp-2">{{ course.description }}</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm text-gray-400">
+                            <i class="fas fa-user mr-1"></i> {{ course.instructor.username }}
+                        </div>
+                        <div class="text-lg font-bold text-primary">
+                            {% if course.price == 0 %}
+                                Free
+                            {% else %}
+                                ${{ course.price }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {% if course.category %}
+                            <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                                {{ course.category.name }}
+                            </span>
+                        {% endif %}
+                        {% for tag in course.tags.all|slice:":2" %}
+                            <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                                {{ tag.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'course_detail' course.pk %}" class="btn-primary text-white font-medium py-2 px-4 rounded-lg w-full text-center block hover:bg-blue-700 transition duration-300">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-3 text-center py-12">
+                <i class="fas fa-book-open text-5xl text-gray-500 mb-4"></i>
+                <p class="text-gray-400 text-lg">No courses available at the moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Categories Section -->
+<div class="mb-16">
+    <h2 class="text-2xl md:text-3xl font-bold text-white mb-8">Browse by Category</h2>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for category in categories %}
+            <div class="bg-lightblue rounded-2xl p-6 text-center card hover:bg-gray-700 transition duration-300">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-folder text-white text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">{{ category.name }}</h3>
+                <p class="text-gray-400 text-sm">{{ category.courses.count }} courses</p>
+            </div>
+        {% empty %}
+            <div class="col-span-4 text-center py-8">
+                <p class="text-gray-400">No categories available.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-lightblue rounded-2xl p-8 mb-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div>
+            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">{{ stats.courses }}</div>
+            <div class="text-gray-400">Courses</div>
+        </div>
+        <div>
+            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">{{ stats.students }}</div>
+            <div class="text-gray-400">Students</div>
+        </div>
+        <div>
+            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">{{ stats.instructors }}</div>
+            <div class="text-gray-400">Instructors</div>
+        </div>
+        <div>
+            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">{{ stats.enrollments }}</div>
+            <div class="text-gray-400">Enrollments</div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 md:p-12 text-center">
+    <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Ready to Start Learning?</h2>
+    <p class="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
+        Join thousands of students who are already advancing their careers with our courses.
+    </p>
+    {% if user.is_authenticated %}
+        <a href="{% url 'course_list' %}" class="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-100 transition duration-300 transform hover:-translate-y-0.5">
+            Explore Courses
+        </a>
+    {% else %}
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="{% url 'login' %}" class="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-100 transition duration-300 transform hover:-translate-y-0.5">
+                Login
+            </a>
+            <a href="{% url 'register' %}" class="bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-white hover:text-blue-600 transition duration-300 transform hover:-translate-y-0.5">
+                Register
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

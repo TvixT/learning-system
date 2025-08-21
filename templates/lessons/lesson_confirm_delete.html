@@ -1,0 +1,27 @@
+{% extends 'lessons/base_lesson.html' %}
+
+{% block title %}Delete Lesson{% endblock %}
+
+{% block lesson_content %}
+<h2 class="text-2xl font-bold mb-6">Delete Lesson</h2>
+
+<div class="bg-lightblue rounded-lg p-6">
+    <p class="mb-6">Are you sure you want to delete the lesson "<strong>{{ lesson.title }}</strong>"?</p>
+    
+    <form method="post" class="flex items-center justify-between">
+        {% csrf_token %}
+        <a 
+            href="{% url 'lesson_detail' course.pk lesson.pk %}" 
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Cancel
+        </a>
+        <button 
+            type="submit" 
+            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Delete Lesson
+        </button>
+    </form>
+</div>
+{% endblock %}

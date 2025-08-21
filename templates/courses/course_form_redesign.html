@@ -1,0 +1,198 @@
+{% extends 'courses/base_course.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block course_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white">Create Course</h1>
+            <p class="mt-2 text-gray-400">Add core information about your course.</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <button 
+                type="submit" 
+                form="course-form"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+                Save Course
+            </button>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6">
+        <form id="course-form" method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Title and Price -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-8">
+                    <label for="{{ form.title.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+                        Title
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-red-500 mt-1 text-sm">{{ form.title.errors }}</div>
+                    {% endif %}
+                    <p class="mt-2 text-xs text-gray-400">Clear, keyword-rich course title.</p>
+                </div>
+                
+                <div class="md:col-span-4">
+                    <label for="{{ form.price.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+                        Price ($)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </span>
+                        {{ form.price }}
+                    </div>
+                    {% if form.price.errors %}
+                        <div class="text-red-500 mt-1 text-sm">{{ form.price.errors }}</div>
+                    {% endif %}
+                    <p class="mt-2 text-xs text-gray-400">Set 0 for free course.</p>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+                    Description
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-red-500 mt-1 text-sm">{{ form.description.errors }}</div>
+                {% endif %}
+                <p class="mt-2 text-xs text-gray-400">Aim for 2–4 concise paragraphs with bullet points.</p>
+            </div>
+            
+            <!-- Category and Image -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-6">
+                    <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+                        Category
+                    </label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="text-red-500 mt-1 text-sm">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="md:col-span-6">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">
+                        Cover Image
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="{{ form.image.id_for_label }}" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-700 hover:bg-gray-600 transition duration-300">
+                            {% if form.instance.image %}
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <img src="{{ form.instance.image.url }}" alt="Current image" class="max-h-32 mb-2 rounded">
+                                    <p class="text-sm text-gray-300">Click to change image</p>
+                                </div>
+                            {% else %}
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p class="mb-2 text-sm text-gray-300">
+                                        <span class="font-semibold">Click to upload</span>
+                                    </p>
+                                    <p class="text-xs text-gray-400">PNG/JPG, 1200×630 recommended</p>
+                                </div>
+                            {% endif %}
+                            {{ form.image }}
+                        </label>
+                    </div>
+                    {% if form.image.errors %}
+                        <div class="text-red-500 mt-1 text-sm">{{ form.image.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Tags -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                    Tags
+                </label>
+                <div class="bg-gray-700 border border-gray-600 rounded-lg p-4">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        {% for tag in form.tags.field.queryset %}
+                            <label class="inline-flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    name="{{ form.tags.name }}" 
+                                    value="{{ tag.pk }}" 
+                                    class="rounded text-blue-600 focus:ring-blue-500"
+                                    {% if tag.pk in form.tags.value %}checked{% endif %}
+                                >
+                                <span class="ml-2 px-3 py-1 bg-[#1D2C48] text-white border border-[#304569] rounded-lg text-sm">
+                                    {{ tag.name }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if form.tags.errors %}
+                    <div class="text-red-500 mt-1 text-sm">{{ form.tags.errors }}</div>
+                {% endif %}
+                <p class="mt-2 text-xs text-gray-400">Use 3–6 relevant tags. Selected tags render as chips.</p>
+            </div>
+            
+            <!-- Published Switch -->
+            <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-gray-600">
+                <div>
+                    <label for="{{ form.published.id_for_label }}" class="block text-sm font-semibold text-white mb-1">
+                        Published
+                    </label>
+                    <p class="text-xs text-gray-400">Unpublish to keep draft private.</p>
+                </div>
+                <div class="relative inline-block w-12 h-6">
+                    {{ form.published }}
+                    <label for="{{ form.published.id_for_label }}" class="absolute top-0 left-0 w-12 h-6 bg-gray-600 rounded-full shadow-inner cursor-pointer transition-colors duration-300 ease-in-out">
+                        <span class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 ease-in-out"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4 pt-6">
+                <a 
+                    href="{% if course %}{% url 'course_detail' course.pk %}{% else %}{% url 'instructor_courses' %}{% endif %}" 
+                    class="px-6 py-3 border border-gray-600 text-white font-medium rounded-xl hover:bg-gray-700 transition duration-300"
+                >
+                    Cancel
+                </a>
+                <button 
+                    type="submit" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                >
+                    Save Course
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Styles for Switch -->
+<style>
+    /* Custom switch styling */
+    #{{ form.published.id_for_label }}:checked + label {
+        background-color: #3b82f6;
+    }
+    
+    #{{ form.published.id_for_label }}:checked + label span {
+        transform: translateX(24px);
+    }
+    
+    /* Hide the default checkbox */
+    #{{ form.published.id_for_label }} {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'assignments/base_assignment.html' %}
+
+{% block title %}{{ assignment.title }}{% endblock %}
+
+{% block assignment_content %}
+<div class="bg-lightblue rounded-lg shadow-lg overflow-hidden">
+    <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+            <h1 class="text-3xl font-bold">{{ assignment.title }}</h1>
+            <span class="text-gray-400">Max Score: {{ assignment.max_score }}</span>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-gray-400">
+                Due Date: {{ assignment.due_date|date:"M d, Y h:i A" }}
+                {% if assignment.is_overdue %}
+                    <span class="text-red-400">(Overdue)</span>
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="prose prose-invert max-w-none mb-6">
+            <p>{{ assignment.description }}</p>
+        </div>
+        
+        {% if user.role == 'student' %}
+            {% if submission %}
+                <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                    <h2 class="text-xl font-bold mb-2">Your Submission</h2>
+                    {% if submission.file %}
+                        <p class="mb-2">File: 
+                            <a href="{{ submission.file.url }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                                {{ submission.file.name }}
+                            </a>
+                        </p>
+                    {% endif %}
+                    {% if submission.text %}
+                        <div class="mb-2">
+                            <h3 class="font-bold">Text Submission:</h3>
+                            <pre class="bg-darkblue p-3 rounded">{{ submission.text }}</pre>
+                        </div>
+                    {% endif %}
+                    <p class="text-gray-400">
+                        Submitted: {{ submission.submitted_at|date:"M d, Y h:i A" }}
+                    </p>
+                    {% if submission.is_graded %}
+                        <div class="mt-4 p-3 bg-green-900 rounded">
+                            <h3 class="font-bold text-green-400">Grade: {{ submission.score }}/{{ assignment.max_score }}</h3>
+                            {% if submission.feedback %}
+                                <p class="mt-2"><strong>Feedback:</strong> {{ submission.feedback }}</p>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="mt-4 p-3 bg-yellow-900 rounded">
+                            <p class="text-yellow-400">Your submission is pending review.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                {% if assignment.is_overdue %}
+                    <div class="bg-red-900 rounded-lg p-4 mb-6">
+                        <p class="text-red-400">This assignment is overdue and cannot be submitted.</p>
+                    </div>
+                {% else %}
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <a 
+                            href="{% url 'submit_assignment' assignment.pk %}" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                        >
+                            Submit Assignment
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% elif user.role in 'instructor,employee' %}
+            <div class="flex flex-wrap gap-2 mb-6">
+                <a 
+                    href="{% url 'assignment_submissions' assignment.pk %}" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    View Submissions ({{ assignment.submissions.count }})
+                </a>
+                <a 
+                    href="{% url 'edit_assignment' assignment.pk %}" 
+                    class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Edit Assignment
+                </a>
+                <a 
+                    href="{% url 'delete_assignment' assignment.pk %}" 
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Delete Assignment
+                </a>
+            </div>
+        {% endif %}
+        
+        <div class="flex flex-wrap gap-2">
+            <a 
+                href="{% url 'assignment_list' %}?lesson={{ lesson.pk }}" 
+                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+                Back to Assignments
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'assignments/base_assignment.html' %}
+
+{% block title %}{{ lesson.title }} - Assignments{% endblock %}
+
+{% block assignment_content %}
+<div class="bg-lightblue rounded-lg shadow-lg overflow-hidden">
+    {% if page_obj %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-lightblue rounded-lg overflow-hidden">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Title</th>
+                        <th class="py-3 px-4 text-left">Due Date</th>
+                        <th class="py-3 px-4 text-left">Max Score</th>
+                        <th class="py-3 px-4 text-left">Status</th>
+                        <th class="py-3 px-4 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {% for assignment in page_obj %}
+                        <tr>
+                            <td class="py-3 px-4">
+                                <a href="{% url 'assignment_detail' assignment.pk %}" class="text-blue-400 hover:text-blue-300">
+                                    {{ assignment.title }}
+                                </a>
+                            </td>
+                            <td class="py-3 px-4">
+                                {{ assignment.due_date|date:"M d, Y h:i A" }}
+                                {% if assignment.is_overdue %}
+                                    <span class="text-red-400">(Overdue)</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4">{{ assignment.max_score }}</td>
+                            <td class="py-3 px-4">
+                                {% if user.role == 'student' %}
+                                    {% with submission=assignment.submissions.all|first %}
+                                        {% if submission %}
+                                            {% if submission.is_graded %}
+                                                <span class="text-green-400">Graded ({{ submission.score }}/{{ assignment.max_score }})</span>
+                                            {% else %}
+                                                <span class="text-yellow-400">Submitted</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-blue-400">Not Submitted</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <span class="text-gray-400">{{ assignment.submissions.count }} submissions</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                                    <a 
+                                        href="{% url 'assignment_detail' assignment.pk %}" 
+                                        class="text-blue-400 hover:text-blue-300"
+                                    >
+                                        View
+                                    </a>
+                                    {% if user.role in 'instructor,employee' %}
+                                        <a 
+                                            href="{% url 'edit_assignment' assignment.pk %}" 
+                                            class="text-yellow-400 hover:text-yellow-300"
+                                        >
+                                            Edit
+                                        </a>
+                                        <a 
+                                            href="{% url 'delete_assignment' assignment.pk %}" 
+                                            class="text-red-400 hover:text-red-300"
+                                        >
+                                            Delete
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="inline-flex rounded-md shadow">
+                    {% if page_obj.has_previous %}
+                        <a 
+                            href="?lesson={{ lesson.pk }}&page={{ page_obj.previous_page_number }}" 
+                            class="px-3 py-2 rounded-l-md border border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                        >
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-3 py-2 border-t border-b border-gray-600 bg-blue-600 text-white">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a 
+                                href="?lesson={{ lesson.pk }}&page={{ num }}" 
+                                class="px-3 py-2 border-t border-b border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                            >
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a 
+                            href="?lesson={{ lesson.pk }}&page={{ page_obj.next_page_number }}" 
+                            class="px-3 py-2 rounded-r-md border border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                        >
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-8">
+            <p class="text-gray-400 mb-4">No assignments found for this lesson.</p>
+            {% if user.is_authenticated and user.role in 'instructor,employee' %}
+                <a 
+                    href="{% url 'create_assignment' lesson.pk %}" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Create Your First Assignment
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+Documentation for Phase 7: Course Review and Moderation System
+
+Overview
+--------
+This phase implements a comprehensive course review system for the Online Learning System, allowing students to submit reviews for courses they've completed and employees to moderate these reviews. The system includes features for rating courses, submitting written reviews, and displaying average ratings and reviews on course detail pages.
+
+Objectives
+----------
+- Implement Review model: rating, review text, linked to student and course
+- Allow students to submit reviews only for enrolled courses
+- Enable employees to moderate reviews (approve/delete)
+- Display reviews and average ratings on course detail pages
+- Include validation to prevent multiple reviews per student per course
+
+These objectives are crucial for creating a feedback loop where students can share their experiences and help other students make informed decisions about which courses to take.
+
+Implementation Approach
+-----------------------
+- Extended the courses app with a new Review model:
+  - Rating field with choices from 1-5
+  - Review text field for written feedback
+  - Approval status for moderation
+  - Unique constraint to prevent multiple reviews per student per course
+- Updated the Course model with helper methods:
+  - get_average_rating() to calculate average rating
+  - get_review_count() to count approved reviews
+- Created views for all review-related functionality:
+  - Review submission for students
+  - Review moderation for employees (approve/delete)
+  - Review listing for employees
+- Developed templates for all review-related views using Tailwind CSS
+- Added navigation links to the review moderation page for employees
+- Implemented a management command to populate sample reviews for testing
+- Added validation to prevent multiple reviews per student per course
+- Implemented moderation UI for employees with approve/delete actions
+
+Roles and Responsibilities
+--------------------------
+- Student: Can submit reviews for courses they're enrolled in and have completed
+- Employee: Can moderate reviews (approve/delete) and view all reviews
+- Instructor: Can view reviews for their courses (through course detail page)
+- Developer: Responsible for implementing the models, views, and templates; maintaining role-based access controls
+
+Expected Deliverables or Outcomes
+---------------------------------
+- Fully functional course review system with rating and written feedback
+- Student review submission interface with validation
+- Employee review moderation interface
+- Display of average ratings and reviews on course detail pages
+- Responsive UI templates with dark theme using Tailwind CSS
+- Sample data for reviews
+- Updated project documentation and requirements
+
+Caveats & Considerations
+------------------------
+- Reviews require approval by employees before being displayed publicly
+- Students can only review courses they're enrolled in and have completed
+- The system prevents students from submitting multiple reviews for the same course
+- Average ratings are calculated only from approved reviews
+- The implementation uses Django's built-in form handling and validation
+- The system maintains data integrity through model relationships and constraints
+- Review moderation actions are logged through Django's messages framework

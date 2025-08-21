@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block title %}User Details - {{ user_detail.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">User Details</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- User Info Card -->
+        <div class="md:col-span-2 bg-lightblue rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-start mb-6">
+                <h2 class="text-2xl font-bold">{{ user_detail.username }}</h2>
+                <span class="bg-gray-700 text-white py-1 px-3 rounded-full text-sm">
+                    {{ user_detail.get_role_display }}
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Personal Information</h3>
+                    <div class="space-y-2">
+                        <p><span class="text-gray-400">Name:</span> {{ user_detail.first_name }} {{ user_detail.last_name }}</p>
+                        <p><span class="text-gray-400">Email:</span> {{ user_detail.email }}</p>
+                        <p><span class="text-gray-400">Date Joined:</span> {{ user_detail.date_joined|date:"M d, Y" }}</p>
+                        <p><span class="text-gray-400">Last Login:</span> 
+                            {% if user_detail.last_login %}
+                                {{ user_detail.last_login|date:"M d, Y H:i" }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Account Status</h3>
+                    <div class="space-y-2">
+                        <p>
+                            <span class="text-gray-400">Status:</span>
+                            {% if user_detail.is_active %}
+                                <span class="text-green-400">Active</span>
+                            {% else %}
+                                <span class="text-red-400">Inactive</span>
+                            {% endif %}
+                        </p>
+                        <p>
+                            <span class="text-gray-400">Staff:</span>
+                            {% if user_detail.is_staff %}
+                                <span class="text-green-400">Yes</span>
+                            {% else %}
+                                <span class="text-red-400">No</span>
+                            {% endif %}
+                        </p>
+                        <p>
+                            <span class="text-gray-400">Superuser:</span>
+                            {% if user_detail.is_superuser %}
+                                <span class="text-green-400">Yes</span>
+                            {% else %}
+                                <span class="text-red-400">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Role-specific Information -->
+            {% if user_detail.role == 'student' and user_detail.studentprofile %}
+                <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Student Profile</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p><span class="text-gray-400">Student ID:</span> {{ user_detail.studentprofile.student_id }}</p>
+                        <p><span class="text-gray-400">Major:</span> {{ user_detail.studentprofile.major|default:"Not specified" }}</p>
+                        <p><span class="text-gray-400">Enrollment Date:</span> 
+                            {% if user_detail.studentprofile.enrollment_date %}
+                                {{ user_detail.studentprofile.enrollment_date|date:"M d, Y" }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% elif user_detail.role == 'instructor' and user_detail.instructorprofile %}
+                <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Instructor Profile</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p><span class="text-gray-400">Employee ID:</span> {{ user_detail.instructorprofile.employee_id }}</p>
+                        <p><span class="text-gray-400">Department:</span> {{ user_detail.instructorprofile.department|default:"Not specified" }}</p>
+                        <p><span class="text-gray-400">Hire Date:</span> 
+                            {% if user_detail.instructorprofile.hire_date %}
+                                {{ user_detail.instructorprofile.hire_date|date:"M d, Y" }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% elif user_detail.role == 'employee' and user_detail.employeeprofile %}
+                <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Employee Profile</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p><span class="text-gray-400">Employee ID:</span> {{ user_detail.employeeprofile.employee_id }}</p>
+                        <p><span class="text-gray-400">Department:</span> {{ user_detail.employeeprofile.department|default:"Not specified" }}</p>
+                        <p><span class="text-gray-400">Position:</span> {{ user_detail.employeeprofile.position|default:"Not specified" }}</p>
+                        <p><span class="text-gray-400">Hire Date:</span> 
+                            {% if user_detail.employeeprofile.hire_date %}
+                                {{ user_detail.employeeprofile.hire_date|date:"M d, Y" }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Role Management Card -->
+        <div class="bg-lightblue rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Manage User Role</h2>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="role" class="block text-sm font-medium text-gray-300 mb-2">Current Role</label>
+                    <select name="role" id="role" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2 mb-4">
+                        {% for value, display in user_detail.ROLE_CHOICES %}
+                            <option value="{{ value }}" {% if user_detail.role == value %}selected{% endif %}>
+                                {{ display }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Update Role
+                </button>
+            </form>
+            
+            <div class="mt-6 pt-6 border-t border-gray-700">
+                <h3 class="text-lg font-semibold mb-3">Actions</h3>
+                <div class="space-y-3">
+                    <a 
+                        href="/admin/auth/user/{{ user_detail.id }}/change/" 
+                        class="block w-full text-center bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                        target="_blank"
+                    >
+                        Edit in Admin
+                    </a>
+                    <a 
+                        href="/admin/auth/user/{{ user_detail.id }}/delete/" 
+                        class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                        target="_blank"
+                    >
+                        Delete User
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Activity -->
+    <div class="mt-8 bg-lightblue rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-bold mb-4">User Activity</h2>
+        
+        {% if user_detail.role == 'student' %}
+            <h3 class="text-lg font-semibold mb-3">Enrollments</h3>
+            {% with enrollments=user_detail.enrollment_set.all %}
+                {% if enrollments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-lightblue rounded-lg">
+                            <thead class="bg-gray-700">
+                                <tr>
+                                    <th class="py-2 px-4 text-left">Course</th>
+                                    <th class="py-2 px-4 text-left">Enrolled At</th>
+                                    <th class="py-2 px-4 text-left">Status</th>
+                                    <th class="py-2 px-4 text-left">Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                {% for enrollment in enrollments %}
+                                    <tr>
+                                        <td class="py-2 px-4">{{ enrollment.course.title }}</td>
+                                        <td class="py-2 px-4">{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                                        <td class="py-2 px-4">
+                                            {% if enrollment.completed %}
+                                                <span class="text-green-400">Completed</span>
+                                            {% else %}
+                                                <span class="text-yellow-400">In Progress</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="py-2 px-4">
+                                            <div class="w-24">
+                                                <div class="flex justify-between mb-1">
+                                                    <span class="text-xs">{{ enrollment.get_progress }}%</span>
+                                                </div>
+                                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                                    <div 
+                                                        class="bg-blue-600 h-2 rounded-full" 
+                                                        style="width: {{ enrollment.get_progress }}%"
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-gray-400">No enrollments found.</p>
+                {% endif %}
+            {% endwith %}
+        {% elif user_detail.role == 'instructor' %}
+            <h3 class="text-lg font-semibold mb-3">Courses</h3>
+            {% with courses=user_detail.course_set.all %}
+                {% if courses %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-lightblue rounded-lg">
+                            <thead class="bg-gray-700">
+                                <tr>
+                                    <th class="py-2 px-4 text-left">Course</th>
+                                    <th class="py-2 px-4 text-left">Created</th>
+                                    <th class="py-2 px-4 text-left">Enrollments</th>
+                                    <th class="py-2 px-4 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                {% for course in courses %}
+                                    <tr>
+                                        <td class="py-2 px-4">{{ course.title }}</td>
+                                        <td class="py-2 px-4">{{ course.created_at|date:"M d, Y" }}</td>
+                                        <td class="py-2 px-4">{{ course.enrollments.count }}</td>
+                                        <td class="py-2 px-4">
+                                            {% if course.published %}
+                                                <span class="text-green-400">Published</span>
+                                            {% else %}
+                                                <span class="text-yellow-400">Draft</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-gray-400">No courses found.</p>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    </div>
+    
+    <div class="mt-6">
+        <a 
+            href="{% url 'employee_user_management' %}" 
+            class="inline-flex items-center text-blue-400 hover:text-blue-300"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to User Management
+        </a>
+    </div>
+</div>
+{% endblock %}

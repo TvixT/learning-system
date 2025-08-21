@@ -1,0 +1,127 @@
+{% extends 'courses/base_course.html' %}
+
+{% block title %}Submit Review for {{ course.title }}{% endblock %}
+
+{% block course_content %}
+<h2 class="text-2xl font-bold mb-6">Submit Review for "{{ course.title }}"</h2>
+
+<form method="post" class="bg-lightblue rounded-lg p-6">
+    {% csrf_token %}
+    
+    <div class="mb-6">
+        <label class="block text-white mb-2">Rating</label>
+        <div class="flex space-x-1" id="rating-container">
+            {% for i in "12345" %}
+                <input 
+                    type="radio" 
+                    id="rating{{ i }}" 
+                    name="rating" 
+                    value="{{ i }}"
+                    class="hidden"
+                    {% if rating == i %}checked{% endif %}
+                >
+                <label 
+                    for="rating{{ i }}" 
+                    class="cursor-pointer text-2xl text-gray-400 hover:text-yellow-400"
+                    data-rating="{{ i }}"
+                >
+                    ★
+                </label>
+            {% endfor %}
+        </div>
+        {% if not rating %}
+            <p class="text-gray-400 text-sm mt-1">Please select a rating</p>
+        {% endif %}
+    </div>
+    
+    <div class="mb-6">
+        <label for="review_text" class="block text-white mb-2">Review</label>
+        <textarea 
+            id="review_text" 
+            name="review_text" 
+            rows="5" 
+            class="w-full px-3 py-2 bg-darkblue text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Share your experience with this course..."
+        >{{ review_text|default:'' }}</textarea>
+        <p class="text-gray-400 text-sm mt-1">Minimum 10 characters</p>
+    </div>
+    
+    <div class="flex justify-end space-x-4">
+        <a 
+            href="{% url 'course_detail' course.pk %}" 
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Cancel
+        </a>
+        <button 
+            type="submit" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Submit Review
+        </button>
+    </div>
+</form>
+
+<script>
+    // Add JavaScript to handle star rating selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('rating-container');
+        const labels = container.querySelectorAll('label');
+        const radioButtons = container.querySelectorAll('input[type="radio"]');
+        
+        labels.forEach(label => {
+            label.addEventListener('click', function(e) {
+                e.preventDefault();
+                const rating = this.getAttribute('data-rating');
+                
+                // Update star colors
+                labels.forEach((lbl, index) => {
+                    if (index < rating) {
+                        lbl.classList.remove('text-gray-400');
+                        lbl.classList.add('text-yellow-400');
+                    } else {
+                        lbl.classList.remove('text-yellow-400');
+                        lbl.classList.add('text-gray-400');
+                    }
+                });
+                
+                // Check the corresponding radio button
+                radioButtons[rating - 1].checked = true;
+            });
+            
+            // Handle hover effect
+            label.addEventListener('mouseenter', function() {
+                const rating = this.getAttribute('data-rating');
+                labels.forEach((lbl, index) => {
+                    if (index < rating) {
+                        lbl.classList.remove('text-gray-400');
+                        lbl.classList.add('text-yellow-400');
+                    }
+                });
+            });
+            
+            label.addEventListener('mouseleave', function() {
+                // Reset to selected rating or default
+                const checkedRadio = container.querySelector('input[type="radio"]:checked');
+                if (checkedRadio) {
+                    const checkedRating = checkedRadio.value;
+                    labels.forEach((lbl, index) => {
+                        if (index < checkedRating) {
+                            lbl.classList.remove('text-gray-400');
+                            lbl.classList.add('text-yellow-400');
+                        } else {
+                            lbl.classList.remove('text-yellow-400');
+                            lbl.classList.add('text-gray-400');
+                        }
+                    });
+                } else {
+                    labels.forEach(lbl => {
+                        lbl.classList.remove('text-yellow-400');
+                        lbl.classList.add('text-gray-400');
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

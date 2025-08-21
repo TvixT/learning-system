@@ -1,0 +1,118 @@
+{% extends 'assignments/base_assignment.html' %}
+
+{% block title %}{{ assignment.title }} - Submissions{% endblock %}
+
+{% block assignment_content %}
+<h2 class="text-2xl font-bold mb-6">Submissions for "{{ assignment.title }}"</h2>
+
+<div class="bg-lightblue rounded-lg shadow-lg overflow-hidden">
+    {% if page_obj %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-lightblue rounded-lg overflow-hidden">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Student</th>
+                        <th class="py-3 px-4 text-left">Submitted At</th>
+                        <th class="py-3 px-4 text-left">Status</th>
+                        <th class="py-3 px-4 text-left">Score</th>
+                        <th class="py-3 px-4 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {% for submission in page_obj %}
+                        <tr>
+                            <td class="py-3 px-4">{{ submission.student.username }}</td>
+                            <td class="py-3 px-4">{{ submission.submitted_at|date:"M d, Y h:i A" }}</td>
+                            <td class="py-3 px-4">
+                                {% if submission.is_graded %}
+                                    <span class="text-green-400">Graded</span>
+                                {% else %}
+                                    <span class="text-yellow-400">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4">
+                                {% if submission.is_graded %}
+                                    {{ submission.score }}/{{ assignment.max_score }}
+                                {% else %}
+                                    <span class="text-gray-400">Not graded</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                                    <a 
+                                        href="{% url 'submission_detail' submission.pk %}" 
+                                        class="text-blue-400 hover:text-blue-300"
+                                    >
+                                        View
+                                    </a>
+                                    {% if not submission.is_graded %}
+                                        <a 
+                                            href="{% url 'grade_submission' submission.pk %}" 
+                                            class="text-yellow-400 hover:text-yellow-300"
+                                        >
+                                            Grade
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="inline-flex rounded-md shadow">
+                    {% if page_obj.has_previous %}
+                        <a 
+                            href="?page={{ page_obj.previous_page_number }}" 
+                            class="px-3 py-2 rounded-l-md border border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                        >
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-3 py-2 border-t border-b border-gray-600 bg-blue-600 text-white">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a 
+                                href="?page={{ num }}" 
+                                class="px-3 py-2 border-t border-b border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                            >
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a 
+                            href="?page={{ page_obj.next_page_number }}" 
+                            class="px-3 py-2 rounded-r-md border border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                        >
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-8">
+            <p class="text-gray-400">No submissions found for this assignment.</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="mt-6">
+    <a 
+        href="{% url 'assignment_detail' assignment.pk %}" 
+        class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+    >
+        Back to Assignment
+    </a>
+</div>
+{% endblock %}

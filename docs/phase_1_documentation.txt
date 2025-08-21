@@ -1,0 +1,58 @@
+Documentation for Phase 1: Project Setup & Core Models
+
+Overview
+--------
+This phase establishes the foundational structure of the Online Learning System V3 using Python Django. It involves setting up the development environment, creating the Django project, and defining the core data models that will represent users, courses, and enrollments within the system. This is the critical first step that provides the base for all future development.
+
+Objectives
+----------
+- Set up a Python virtual environment for the project.
+- Install Django and other necessary dependencies.
+- Create the main Django project structure.
+- Define initial core models:
+  - Custom User model with role field (student, instructor, employee)
+  - Separate profile models for Student, Instructor, and Employee
+- Implement authentication system with role-based redirects
+- Create and apply database migrations for the core models.
+- Ensure a basic, functional Django development server can run.
+
+These objectives are crucial as they provide the data backbone and initial structure upon which all features of the learning platform will be built. Without a solid model for users, courses, and their relationships, subsequent features like content delivery, assessments, and progress tracking cannot be effectively implemented.
+
+Implementation Approach
+-----------------------
+- A Python virtual environment was created to manage dependencies in isolation.
+- Django was installed within this environment.
+- The Django admin command `django-admin startproject` was used to scaffold the project.
+- A new Django app, named `accounts`, was created using `python manage.py startapp accounts` to house the authentication models and views.
+- A custom User model was defined in `accounts/models.py`, extending Django's AbstractUser. This model includes a role field with choices for 'student', 'instructor', and 'employee'.
+- Separate profile models for Student, Instructor, and Employee were created, each with a OneToOne relationship to the User model.
+- Custom admin configurations were set up to manage these models in the Django admin interface.
+- A custom user registration form was created that limits role selection to only 'student' and 'instructor' during registration. Employee roles can only be assigned by administrators.
+- Views for login, logout, registration, and role-based dashboards were implemented.
+- Templates for all views were created with a responsive design using Bootstrap.
+- Initial migrations were generated using `python manage.py makemigrations` and applied with `python manage.py migrate`.
+- Sample users were created programmatically for testing purposes.
+
+Roles and Responsibilities
+--------------------------
+- Developer/Architect: Responsible for setting up the environment, creating the project structure, defining models, implementing authentication, and ensuring the initial server runs correctly.
+- (Future) Database Administrator: Will be involved in optimizing and managing the database schema as it evolves.
+- (Future) UI/UX Designer: Will refine the user interface and experience.
+
+Expected Deliverables or Outcomes
+---------------------------------
+- An initialized Django project repository with a virtual environment.
+- An `accounts` app with a custom User model and profile models for Student, Instructor, and Employee.
+- A complete authentication system with login, logout, and registration functionality.
+- Role-based redirects to appropriate dashboards after login/registration.
+- A database schema reflecting the initial models, created via migrations.
+- A running Django development server accessible locally, confirming the basic project setup is successful.
+- Documentation outlining the setup process and core model definitions for team reference.
+
+Caveats & Considerations
+------------------------
+- This phase uses Django's default database (SQLite) for simplicity. A production environment will likely require a more robust database system like PostgreSQL.
+- User authentication relies on Django's built-in authentication system with custom extensions for roles.
+- Model definitions are subject to change as more detailed requirements emerge in subsequent phases.
+- The registration form intentionally restricts role selection to prevent unauthorized access to employee functions.
+- Profile models are created but not yet fully utilized - they will be expanded in future phases.

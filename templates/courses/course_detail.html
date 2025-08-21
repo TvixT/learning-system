@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - Online Learning System{% endblock %}
+
+{% block content %}
+<div class="bg-lightblue rounded-xl shadow-lg overflow-hidden">
+    {% if course.image %}
+        <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-64 md:h-80 object-cover">
+    {% else %}
+        <div class="bg-gray-700 h-64 md:h-80 flex items-center justify-center">
+            <i class="fas fa-book-open text-5xl text-gray-500"></i>
+        </div>
+    {% endif %}
+    
+    <div class="p-6 md:p-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">{{ course.title }}</h1>
+                <div class="flex flex-wrap items-center text-gray-400 text-sm">
+                    <span class="flex items-center mr-4">
+                        <i class="fas fa-user mr-1"></i>
+                        {{ course.instructor.username }}
+                    </span>
+                    {% if course.category %}
+                        <span class="flex items-center mr-4">
+                            <i class="fas fa-folder mr-1"></i>
+                            {{ course.category.name }}
+                        </span>
+                    {% endif %}
+                    <span class="flex items-center">
+                        <i class="fas fa-calendar mr-1"></i>
+                        {{ course.created_at|date:"M d, Y" }}
+                    </span>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <span class="text-2xl font-bold text-primary">
+                    {% if course.price == 0 %}
+                        Free
+                    {% else %}
+                        ${{ course.price }}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Tags -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            {% for tag in course.tags.all %}
+                <span class="bg-gray-700 text-gray-300 text-sm px-3 py-1 rounded-full">
+                    {{ tag.name }}
+                </span>
+            {% endfor %}
+        </div>
+        
+        <!-- Description -->
+        <div class="prose prose-invert max-w-none mb-8">
+            <p class="text-lg text-gray-300">{{ course.description }}</p>
+        </div>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-darkblue rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ course.get_lessons_count }}</div>
+                <div class="text-gray-400 text-sm">Lessons</div>
+            </div>
+            {% if course.get_review_count > 0 %}
+                <div class="bg-darkblue rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-primary mb-1">{{ course.get_average_rating }}</div>
+                    <div class="text-gray-400 text-sm">Rating</div>
+                </div>
+            {% endif %}
+            <div class="bg-darkblue rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ course.enrollments.count }}</div>
+                <div class="text-gray-400 text-sm">Students</div>
+            </div>
+            <div class="bg-darkblue rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ course.get_review_count }}</div>
+                <div class="text-gray-400 text-sm">Reviews</div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex flex-wrap gap-4 mb-8">
+            {% if user.is_authenticated and user.role == 'student' %}
+                {% if enrollment %}
+                    <a 
+                        href="{% url 'course_lessons' course.pk %}" 
+                        class="btn-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
+                    >
+                        <i class="fas fa-play-circle mr-2"></i> Continue Learning
+                    </a>
+                    <span class="bg-green-600 text-white font-bold py-3 px-6 rounded-lg">
+                        <i class="fas fa-check-circle mr-2"></i> Enrolled
+                    </span>
+                {% else %}
+                    <a 
+                        href="{% url 'enroll_in_course' course.pk %}" 
+                        class="btn-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
+                    >
+                        <i class="fas fa-user-plus mr-2"></i> Enroll in Course
+                    </a>
+                {% endif %}
+            {% elif user.is_authenticated and user.role == 'instructor' and course.instructor == user %}
+                <a 
+                    href="{% url 'lesson_list' course.pk %}" 
+                    class="btn-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
+                >
+                    <i class="fas fa-edit mr-2"></i> Manage Lessons
+                </a>
+                <a 
+                    href="{% url 'edit_course' course.pk %}" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                >
+                    <i class="fas fa-cog mr-2"></i> Edit Course
+                </a>
+            {% elif user.is_authenticated and user.role == 'employee' %}
+                <a 
+                    href="{% url 'lesson_list' course.pk %}" 
+                    class="btn-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
+                >
+                    <i class="fas fa-edit mr-2"></i> Manage Lessons
+                </a>
+                <a 
+                    href="{% url 'edit_course' course.pk %}" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                >
+                    <i class="fas fa-cog mr-2"></i> Edit Course
+                </a>
+            {% endif %}
+            
+            <a 
+                href="{% url 'course_list' %}" 
+                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+            >
+                <i class="fas fa-arrow-left mr-2"></i> Back to Courses
+            </a>
+        </div>
+        
+        <!-- Reviews Section -->
+        {% if course.get_review_count > 0 %}
+            <div class="border-t border-gray-700 pt-8">
+                <h2 class="text-2xl font-bold text-white mb-6">Student Reviews</h2>
+                
+                <div class="space-y-6">
+                    {% for review in approved_reviews %}
+                        <div class="bg-darkblue rounded-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-gray-400"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-white">{{ review.student.username }}</h3>
+                                        <div class="flex text-yellow-400">
+                                            {% for i in "12345" %}
+                                                {% if i|add:0 <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-gray-400 text-sm">{{ review.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <p class="text-gray-300">{{ review.review_text }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

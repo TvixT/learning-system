@@ -1,0 +1,69 @@
+Documentation for Phase 3: Lesson Model and Multimedia Content Management
+
+Overview
+--------
+This phase implements the Lesson model as the core content unit within courses, enabling instructors to create rich multimedia learning experiences. Each lesson can contain video content (either uploaded files or external URLs) and supporting documents, organized by a customizable order sequence. The implementation provides instructors with tools to create, manage, and organize lessons within their courses.
+
+Objectives
+----------
+- Implement Lesson model linked to Course with comprehensive fields
+- Support for video content through both file uploads and external URLs (YouTube, Vimeo, etc.)
+- Document upload capability for supplementary materials
+- Order sequence management for lesson progression
+- Enable instructors to create, update, and list lessons for their courses
+- Provide templates for lesson creation and viewing with proper multimedia display
+- Ensure file upload handling and validation
+- Maintain proper ordering of lessons within courses
+
+These objectives are crucial for creating engaging, multimedia-rich courses that enhance the learning experience for students.
+
+Implementation Approach
+-----------------------
+- Created a new Django app 'lessons' to encapsulate lesson-related functionality
+- Defined the Lesson model in lessons/models.py with fields for:
+  - Title and description
+  - Foreign key relationship to Course
+  - Video file upload (local storage)
+  - External video URL support
+  - Document file upload (PDFs, docs, etc.)
+  - Order sequence for lesson progression
+  - Timestamps for creation and updates
+- Implemented a custom LessonForm in lessons/forms.py with validation:
+  - Ensures either a video file OR video URL is provided (not both)
+  - Makes file fields optional as appropriate
+  - Validates file types and sizes
+- Created views in lessons/views.py for comprehensive lesson management:
+  - Lesson listing for a specific course
+  - Detailed lesson view with multimedia content
+  - Creation and editing forms
+  - Deletion confirmation
+- Developed templates for all lesson-related views using Tailwind CSS
+- Added navigation links from course detail pages to lesson management
+- Implemented a management command to populate sample lessons for testing
+- Added helper methods to the Lesson model for video source handling
+
+Roles and Responsibilities
+--------------------------
+- Instructor: Can create, edit, and delete lessons within their own courses
+- Employee: Can manage all lessons across all courses
+- Developer: Responsible for implementing the models, views, and templates; maintaining role-based access controls
+
+Expected Deliverables or Outcomes
+---------------------------------
+- Fully functional lesson management system integrated with courses
+- Support for multimedia content including video and documents
+- Proper file upload handling with validation
+- Responsive UI templates with dark theme using Tailwind CSS
+- Sample data for lessons with external video URLs
+- Updated project documentation and requirements
+
+Caveats & Considerations
+------------------------
+- Video files are stored locally; a production environment would use cloud storage
+- External video embedding uses standard iframe techniques for YouTube, Vimeo, etc.
+- Document files are stored locally; a production environment would use cloud storage
+- File type and size validation is implemented but can be extended
+- Lesson ordering is maintained through the 'order' field
+- The implementation uses Django's built-in file handling capabilities
+- Video playback uses HTML5 video tag for uploaded files
+- External videos are embedded using responsive iframes

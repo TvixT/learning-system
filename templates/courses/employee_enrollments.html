@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Enrollment Management{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Enrollment Management</h1>
+    
+    {% if page_obj %}
+        <div class="bg-lightblue rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-lightblue rounded-lg overflow-hidden">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Student</th>
+                            <th class="py-3 px-4 text-left">Course</th>
+                            <th class="py-3 px-4 text-left">Instructor</th>
+                            <th class="py-3 px-4 text-left">Enrolled At</th>
+                            <th class="py-3 px-4 text-left">Completed</th>
+                            <th class="py-3 px-4 text-left">Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for enrollment in page_obj %}
+                            <tr>
+                                <td class="py-3 px-4">{{ enrollment.student.username }}</td>
+                                <td class="py-3 px-4">{{ enrollment.course.title }}</td>
+                                <td class="py-3 px-4">{{ enrollment.course.instructor.username }}</td>
+                                <td class="py-3 px-4">{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                                <td class="py-3 px-4">
+                                    {% if enrollment.completed %}
+                                        <span class="text-green-400">Yes</span>
+                                    {% else %}
+                                        <span class="text-red-400">No</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4">
+                                    <div class="w-24">
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-xs">{{ enrollment.get_progress }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-2">
+                                            <div 
+                                                class="bg-blue-600 h-2 rounded-full" 
+                                                style="width: {{ enrollment.get_progress }}%"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="mt-8 flex justify-center">
+                    <nav class="inline-flex rounded-md shadow">
+                        {% if page_obj.has_previous %}
+                            <a 
+                                href="?page={{ page_obj.previous_page_number }}" 
+                                class="px-3 py-2 rounded-l-md border border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                            >
+                                Previous
+                            </a>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="px-3 py-2 border-t border-b border-gray-600 bg-blue-600 text-white">
+                                    {{ num }}
+                                </span>
+                            {% else %}
+                                <a 
+                                    href="?page={{ num }}" 
+                                    class="px-3 py-2 border-t border-b border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                                >
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <a 
+                                href="?page={{ page_obj.next_page_number }}" 
+                                class="px-3 py-2 rounded-r-md border border-gray-600 bg-darkblue text-white hover:bg-gray-700"
+                            >
+                                Next
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="bg-lightblue rounded-lg p-8 text-center">
+            <p class="text-lg">No enrollments found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

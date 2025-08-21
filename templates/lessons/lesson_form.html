@@ -1,0 +1,115 @@
+{% extends 'lessons/base_lesson.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block lesson_content %}
+<h2 class="text-2xl font-bold mb-6">{{ title }}</h2>
+
+<form method="post" enctype="multipart/form-data" class="bg-lightblue rounded-lg p-6">
+    {% csrf_token %}
+    
+    <div class="mb-6">
+        <label for="{{ form.title.id_for_label }}" class="block text-white mb-2">Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}
+            <div class="text-red-500 mt-1">{{ form.title.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-6">
+        <label for="{{ form.description.id_for_label }}" class="block text-white mb-2">Description</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+            <div class="text-red-500 mt-1">{{ form.description.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+            <label for="{{ form.video_file.id_for_label }}" class="block text-white mb-2">Video File</label>
+            {{ form.video_file }}
+            {% if form.video_file.errors %}
+                <div class="text-red-500 mt-1">{{ form.video_file.errors }}</div>
+            {% endif %}
+            {% if form.instance.video_file %}
+                <div class="mt-2">
+                    <p class="text-gray-400 text-sm">Current video file:</p>
+                    <a href="{{ form.instance.video_file.url }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                        {{ form.instance.video_file.name }}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="{{ form.video_url.id_for_label }}" class="block text-white mb-2">Video URL</label>
+            {{ form.video_url }}
+            {% if form.video_url.errors %}
+                <div class="text-red-500 mt-1">{{ form.video_url.errors }}</div>
+            {% endif %}
+            <p class="text-gray-400 text-sm mt-1">For external videos (YouTube, Vimeo, etc.)</p>
+        </div>
+    </div>
+    
+    <div class="mb-6">
+        <label for="{{ form.document.id_for_label }}" class="block text-white mb-2">Document</label>
+        {{ form.document }}
+        {% if form.document.errors %}
+            <div class="text-red-500 mt-1">{{ form.document.errors }}</div>
+        {% endif %}
+        {% if form.instance.document %}
+            <div class="mt-2">
+                <p class="text-gray-400 text-sm">Current document:</p>
+                <a href="{{ form.instance.document.url }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                    {{ form.instance.document.name }}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-6">
+        <label for="{{ form.order.id_for_label }}" class="block text-white mb-2">Order</label>
+        {{ form.order }}
+        {% if form.order.errors %}
+            <div class="text-red-500 mt-1">{{ form.order.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="flex justify-end space-x-4">
+        <a 
+            href="{% if lesson %}{% url 'lesson_detail' course.pk lesson.pk %}{% else %}{% url 'lesson_list' course.pk %}{% endif %}" 
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Cancel
+        </a>
+        <button 
+            type="submit" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Save Lesson
+        </button>
+    </div>
+</form>
+
+<!-- Style the form fields -->
+<style>
+    #id_title, #id_description, #id_video_file, #id_video_url, #id_document, #id_order {
+        width: 100%;
+        padding: 0.5rem;
+        background-color: #0f172a; /* darkblue */
+        color: #f8fafc; /* white text */
+        border: 1px solid #475569; /* gray border */
+        border-radius: 0.25rem;
+    }
+    
+    #id_description {
+        min-height: 120px;
+    }
+    
+    #id_title:focus, #id_description:focus, #id_video_file:focus, #id_video_url:focus, #id_document:focus, #id_order:focus {
+        outline: none;
+        border-color: #3b82f6; /* blue border on focus */
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* blue glow */
+    }
+</style>
+{% endblock %}

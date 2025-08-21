@@ -1,0 +1,90 @@
+{% extends 'assignments/base_assignment.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block assignment_content %}
+<h2 class="text-2xl font-bold mb-6">{{ title }}</h2>
+
+<div class="bg-lightblue rounded-lg shadow-lg overflow-hidden mb-6">
+    <div class="p-6">
+        <h3 class="text-xl font-bold mb-2">{{ assignment.title }}</h3>
+        <p class="text-gray-400 mb-4">Submitted by: {{ submission.student.username }}</p>
+        
+        <div class="bg-gray-700 rounded-lg p-4 mb-4">
+            <h4 class="font-bold mb-2">Submission Content</h4>
+            {% if submission.file %}
+                <p class="mb-2">File: 
+                    <a href="{{ submission.file.url }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                        {{ submission.file.name }}
+                    </a>
+                </p>
+            {% endif %}
+            {% if submission.text %}
+                <div class="mb-2">
+                    <h5 class="font-bold">Text Submission:</h5>
+                    <pre class="bg-darkblue p-3 rounded">{{ submission.text }}</pre>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<form method="post" class="bg-lightblue rounded-lg p-6">
+    {% csrf_token %}
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+            <label for="{{ form.score.id_for_label }}" class="block text-white mb-2">Score (0-{{ assignment.max_score }})</label>
+            {{ form.score }}
+            {% if form.score.errors %}
+                <div class="text-red-500 mt-1">{{ form.score.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="{{ form.feedback.id_for_label }}" class="block text-white mb-2">Feedback</label>
+            {{ form.feedback }}
+            {% if form.feedback.errors %}
+                <div class="text-red-500 mt-1">{{ form.feedback.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="flex justify-end space-x-4">
+        <a 
+            href="{% url 'submission_detail' submission.pk %}" 
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Cancel
+        </a>
+        <button 
+            type="submit" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Save Grade
+        </button>
+    </div>
+</form>
+
+<!-- Style the form fields -->
+<style>
+    #id_score, #id_feedback {
+        width: 100%;
+        padding: 0.5rem;
+        background-color: #0f172a; /* darkblue */
+        color: #f8fafc; /* white text */
+        border: 1px solid #475569; /* gray border */
+        border-radius: 0.25rem;
+    }
+    
+    #id_feedback {
+        min-height: 120px;
+    }
+    
+    #id_score:focus, #id_feedback:focus {
+        outline: none;
+        border-color: #3b82f6; /* blue border on focus */
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* blue glow */
+    }
+</style>
+{% endblock %}

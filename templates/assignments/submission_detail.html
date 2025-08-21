@@ -1,0 +1,83 @@
+{% extends 'assignments/base_assignment.html' %}
+
+{% block title %}Submission by {{ submission.student.username }}{% endblock %}
+
+{% block assignment_content %}
+<h2 class="text-2xl font-bold mb-6">Submission by {{ submission.student.username }}</h2>
+
+<div class="bg-lightblue rounded-lg shadow-lg overflow-hidden">
+    <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+            <h1 class="text-3xl font-bold">{{ assignment.title }}</h1>
+            <span class="text-gray-400">Max Score: {{ assignment.max_score }}</span>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-gray-400">
+                Submitted: {{ submission.submitted_at|date:"M d, Y h:i A" }}
+            </p>
+        </div>
+        
+        <div class="bg-gray-700 rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-bold mb-2">Submission Content</h2>
+            {% if submission.file %}
+                <p class="mb-2">File: 
+                    <a href="{{ submission.file.url }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                        {{ submission.file.name }}
+                    </a>
+                </p>
+            {% endif %}
+            {% if submission.text %}
+                <div class="mb-2">
+                    <h3 class="font-bold">Text Submission:</h3>
+                    <pre class="bg-darkblue p-3 rounded">{{ submission.text }}</pre>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if submission.is_graded %}
+            <div class="bg-green-900 rounded-lg p-4 mb-6">
+                <h3 class="font-bold text-green-400 text-xl">Grade: {{ submission.score }}/{{ assignment.max_score }}</h3>
+                {% if submission.feedback %}
+                    <div class="mt-2">
+                        <h4 class="font-bold">Feedback:</h4>
+                        <p>{{ submission.feedback }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% elif user.role in 'instructor,employee' %}
+            <div class="bg-yellow-900 rounded-lg p-4 mb-6">
+                <p class="text-yellow-400">This submission has not been graded yet.</p>
+                <a 
+                    href="{% url 'grade_submission' submission.pk %}" 
+                    class="mt-2 inline-block bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Grade Submission
+                </a>
+            </div>
+        {% else %}
+            <div class="bg-yellow-900 rounded-lg p-4 mb-6">
+                <p class="text-yellow-400">Your submission is pending review.</p>
+            </div>
+        {% endif %}
+        
+        <div class="flex flex-wrap gap-2">
+            {% if user.role in 'instructor,employee' %}
+                <a 
+                    href="{% url 'assignment_submissions' assignment.pk %}" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Back to Submissions
+                </a>
+            {% else %}
+                <a 
+                    href="{% url 'assignment_detail' assignment.pk %}" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                >
+                    Back to Assignment
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

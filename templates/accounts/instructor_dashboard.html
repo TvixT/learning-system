@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Instructor Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Instructor Dashboard</h1>
+    
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-lightblue rounded-lg shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="rounded-full bg-blue-500 p-3 mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-gray-400">Your Courses</p>
+                    <p class="text-2xl font-bold">{{ total_courses }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-lightblue rounded-lg shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="rounded-full bg-green-500 p-3 mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-gray-400">Total Students</p>
+                    <p class="text-2xl font-bold">{{ total_enrollments }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-lightblue rounded-lg shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="rounded-full bg-yellow-500 p-3 mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-gray-400">Avg. Enrollment</p>
+                    <p class="text-2xl font-bold">
+                        {% if total_courses > 0 %}
+                            {{ total_enrollments|divisibleby:total_courses|yesno:"1,0" }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Courses -->
+    <div class="bg-lightblue rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Recent Courses</h2>
+            <a 
+                href="{% url 'create_course' %}" 
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+                Create Course
+            </a>
+        </div>
+        
+        {% if recent_courses %}
+            <div class="space-y-4">
+                {% for course in recent_courses %}
+                    <div class="flex items-center p-4 bg-gray-700 rounded-lg">
+                        <div class="flex-shrink-0 mr-4">
+                            {% if course.image %}
+                                <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-16 h-16 object-cover rounded">
+                            {% else %}
+                                <div class="bg-gray-600 w-16 h-16 rounded flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-medium text-white">
+                                <a href="{% url 'course_detail' course.pk %}" class="hover:text-blue-400">
+                                    {{ course.title }}
+                                </a>
+                            </h3>
+                            <p class="text-gray-300 text-sm">{{ course.description|truncatewords:15 }}</p>
+                        </div>
+                        
+                        <div class="flex-shrink-0">
+                            <span class="bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm">
+                                {{ course.enrollments.count }} students
+                            </span>
+                        </div>
+                        
+                        <div class="flex-shrink-0 ml-4">
+                            <a 
+                                href="{% url 'lesson_list' course.pk %}" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                            >
+                                Manage
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-400">You haven't created any courses yet.</p>
+        {% endif %}
+    </div>
+    
+    <!-- All Courses -->
+    <div class="bg-lightblue rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-bold mb-4">All Your Courses</h2>
+        
+        {% if courses %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-lightblue rounded-lg overflow-hidden">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Course</th>
+                            <th class="py-3 px-4 text-left">Category</th>
+                            <th class="py-3 px-4 text-left">Lessons</th>
+                            <th class="py-3 px-4 text-left">Students</th>
+                            <th class="py-3 px-4 text-left">Published</th>
+                            <th class="py-3 px-4 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for course in courses %}
+                            <tr>
+                                <td class="py-3 px-4">
+                                    <a href="{% url 'course_detail' course.pk %}" class="text-blue-400 hover:text-blue-300">
+                                        {{ course.title }}
+                                    </a>
+                                </td>
+                                <td class="py-3 px-4">
+                                    {% if course.category %}
+                                        {{ course.category.name }}
+                                    {% else %}
+                                        <span class="text-gray-400">None</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4">{{ course.lessons.count }}</td>
+                                <td class="py-3 px-4">{{ course.enrollments.count }}</td>
+                                <td class="py-3 px-4">
+                                    {% if course.published %}
+                                        <span class="text-green-400">Yes</span>
+                                    {% else %}
+                                        <span class="text-red-400">No</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4">
+                                    <div class="flex space-x-2">
+                                        <a 
+                                            href="{% url 'lesson_list' course.pk %}" 
+                                            class="text-blue-400 hover:text-blue-300"
+                                        >
+                                            Lessons
+                                        </a>
+                                        <a 
+                                            href="{% url 'edit_course' course.pk %}" 
+                                            class="text-yellow-400 hover:text-yellow-300"
+                                        >
+                                            Edit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-400">You haven't created any courses yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

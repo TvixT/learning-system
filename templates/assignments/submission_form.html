@@ -1,0 +1,66 @@
+{% extends 'assignments/base_assignment.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block assignment_content %}
+<h2 class="text-2xl font-bold mb-6">{{ title }}</h2>
+
+<form method="post" enctype="multipart/form-data" class="bg-lightblue rounded-lg p-6">
+    {% csrf_token %}
+    
+    <div class="mb-6">
+        <label for="{{ form.file.id_for_label }}" class="block text-white mb-2">File Submission</label>
+        {{ form.file }}
+        {% if form.file.errors %}
+            <div class="text-red-500 mt-1">{{ form.file.errors }}</div>
+        {% endif %}
+        <p class="text-gray-400 text-sm mt-1">Upload a file for your assignment submission.</p>
+    </div>
+    
+    <div class="mb-6">
+        <label for="{{ form.text.id_for_label }}" class="block text-white mb-2">Text Submission</label>
+        {{ form.text }}
+        {% if form.text.errors %}
+            <div class="text-red-500 mt-1">{{ form.text.errors }}</div>
+        {% endif %}
+        <p class="text-gray-400 text-sm mt-1">Enter your assignment submission as text.</p>
+    </div>
+    
+    <div class="flex justify-end space-x-4">
+        <a 
+            href="{% url 'assignment_detail' assignment.pk %}" 
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Cancel
+        </a>
+        <button 
+            type="submit" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+        >
+            Submit Assignment
+        </button>
+    </div>
+</form>
+
+<!-- Style the form fields -->
+<style>
+    #id_file, #id_text {
+        width: 100%;
+        padding: 0.5rem;
+        background-color: #0f172a; /* darkblue */
+        color: #f8fafc; /* white text */
+        border: 1px solid #475569; /* gray border */
+        border-radius: 0.25rem;
+    }
+    
+    #id_text {
+        min-height: 200px;
+    }
+    
+    #id_file:focus, #id_text:focus {
+        outline: none;
+        border-color: #3b82f6; /* blue border on focus */
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* blue glow */
+    }
+</style>
+{% endblock %}
