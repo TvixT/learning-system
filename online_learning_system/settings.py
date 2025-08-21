@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-qnlj(#y%xk#1zac^ccwidc3mv6jqby=2u^2z0%o679r3o&w0=7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["learning-system-production-3d3f.up.railway.app"]
 
 
 # Application definition
